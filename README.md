@@ -1,6 +1,7 @@
 CloudFilesHelper "1.0"
 
 ABOUT
+
 Rackspace makes some awesome open products, but lately they seem to neglect two things in the grand scheme of things:
 one of their own products, Cloud Files, and .NET developers. In a way, I suppose it makes sense to somewhat ignore
 a proprietary development platform and focus on open ones. After all, Rackspace's stuff is built on OpenStack. But
@@ -10,6 +11,7 @@ CloudFilesHelper is designed to help bridge the gap for us lowly .NET developers
 Files functionality.
 
 SOME NOTES
+
 - I created this project for my own use initially and decided to release it on github because there is no good SDK
   for .NET development for Cloud Files. That being said, this code probably isn't perfect. Feel free to improve it
   where possible. I have tested it in my use but other than that, it hasn't seen any use.
@@ -20,6 +22,7 @@ SOME NOTES
   thing for code purposes.
 
 LIBRARY COMPONENTS
+
 CloudFilesHelper consists of 1 main class (CloudFilesHelper, go figure), 7 supporting classes, a Utility module, and
 9 enumerations. All of the work is done with the CloudFilesHelper classes. When you use CloudFilesHelper to perform
 an operation in Cloud Files, it will return one of the support objects or enumerations. Objects are returned when
@@ -27,6 +30,7 @@ you are expecting information; enumeration members are returned on operations wh
 it worked or not.
 
 EXAMPLES
+
 Let's suppose we want to create a Container in our Cloud Files account and then upload a file to it. Here is how we
 would do it after adding the Reference to our project:
 
@@ -36,21 +40,17 @@ Imports Helpers.CloudFiles
 
 ' Let's skip ahead and pretend we're in a subroutine or method.
 
-' We need an instance of a CloudFilesHelper object to do the lifting. We pass to it our Cloud Files API Key and our
-' Cloud Files Account Name.
+' We need an instance of a CloudFilesHelper object to do the lifting. We pass to it our Cloud Files API Key and our Cloud Files Account Name.
 
 Dim Helper As New CloudFilesHelper("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "accountname")
 
-' The constructor gets us an X-Auth-Token to use and will keep using that token. If it detects that it is expired,
-' it will get a new token in any call automatically; we do not need to manually authenticate again.
+' The constructor gets us an X-Auth-Token to use and will keep using that token. If it detects that it is expired, it will get a new token in any call automatically; we do not need to manually authenticate again.
 
-' Currently in the US, Cloud Files lets us put containers in a datacenter in either Dallas (by default) or Chicago.
-' Let's create a container named "Files" at the Chicago datacenter.
+' Currently in the US, Cloud Files lets us put containers in a datacenter in either Dallas (by default) or Chicago. Let's create a container named "Files" at the Chicago datacenter.
 
 Dim ContainerResult As CreateContainerResult = Helper.CreateContainer("Files", ServerLocation.Chicago)
 
-' If ContainerResult = CreateContainerResult.ContainerCreatedSuccessfully then we know the Container was made.
-' Since this is an example, who needs error checking? :P
+' If ContainerResult = CreateContainerResult.ContainerCreatedSuccessfully then we know the Container was made. Since this is an example, who needs error checking? :P
 
 ' Let's upload a file.
 
