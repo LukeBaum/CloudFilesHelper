@@ -56,15 +56,8 @@ Dim ContainerResult As CreateContainerResult = Helper.CreateContainer("Files", S
 
 Dim FileResult As StoreFileResult = Helper.StoreFile("Files", "C:\Users\Luke\Pictures\lol.gif", ServerLocation.Chicago)
 
-' Oh what the heck. Let's take a look at how we could see if the file actually uploaded.
-
-Select Case FileResult
-	Case Is = StoreFileResult.FileStoredSuccessfully
-		MessageBox.Show("File stored successfully.")
-    Case Else
-        MessageBox.Show("The file didn't get stored.")
-End Select
-
 ' It is important to note that sometimes, an exception can be thrown. For example, if an Internet connection is
+
 ' interrupted and you can't reach Cloud Files, just about any call will throw an exception. So make sure to
+
 ' use error trapping. I considered putting my own exception handling in but decided against it.
