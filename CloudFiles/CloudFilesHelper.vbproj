@@ -77,6 +77,7 @@
     <Compile Include="Responses\AccountMetadata.vb" />
     <Compile Include="Responses\ContainerList.vb" />
     <Compile Include="Responses\ContainerMetadata.vb" />
+    <Compile Include="Responses\CdnEnableContainerResult.vb" />
     <Compile Include="Responses\CopyFileResult.vb" />
     <Compile Include="Responses\CreateContainerResult.vb" />
     <Compile Include="Responses\DeleteContainerResult.vb" />

@@ -131,15 +131,19 @@ Namespace CloudFiles
             End Get
         End Property
 
-        ' The CDN Management URL can be useful...
+        ' The CDN Management URL for each datacenter can be useful...
         Private pManagementUrl As String = Nothing
-        Public Property ManagementUrl As String
+
+        Public ReadOnly Property DallasManagementUrl As String
             Get
                 Return pManagementUrl
             End Get
-            Set(value As String)
-                pManagementUrl = value
-            End Set
+        End Property
+
+        Public ReadOnly Property ChicagoManagementUrl As String
+            Get
+                Return pManagementUrl.Replace("//cdn1.", "//cdn2.")
+            End Get
         End Property
 
 #End Region
@@ -184,7 +188,7 @@ Namespace CloudFiles
                 Dim AuthenticationResponse As HttpWebResponse = AuthenticationRequest.GetResponse
 
                 Me.XAuthToken = AuthenticationResponse.Headers("X-Auth-Token")
-                Me.ManagementUrl = AuthenticationResponse.Headers("X-CDN-Management-Url")
+                Me.pManagementUrl = AuthenticationResponse.Headers("X-CDN-Management-Url")
                 Me.pStorageUrl = AuthenticationResponse.Headers("X-Storage-Url").Replace(".dfw1.", ".<location>.")
                 Me.XAuthTokenReceivedOn = Now
 
@@ -199,6 +203,20 @@ Namespace CloudFiles
 
             ' Make sure we've got a valid token. Reauthenticate if need be.
             If Me.XAuthTokenIsExpired Then Me.Authenticate()
+
+            Try
+
+            Catch ex As WebException
+
+                Dim Response As HttpWebResponse = ex.Response
+
+                If Response.StatusCode = HttpStatusCode.Unauthorized Then
+
+
+
+                End If
+
+            End Try
 
             ' A request to get account metadata.
             Dim MetadataRequest As HttpWebRequest
@@ -301,6 +319,74 @@ Namespace CloudFiles
                 Return CreateContainerResult.ContainerAlreadyExists
             Else
                 Return CreateContainerResult.UnknownResultProbableFailure
+            End If
+
+        End Function
+
+        Public Function CdnEnableContainer(ByVal ContainerName As String, ByVal ServerLocation As ServerLocation, Optional ByVal TimeToLive As Long = 259200) As CdnEnableContainerResult
+
+            ' Make sure we've got a valid token. Reauthenticate if need be.
+            If Me.XAuthTokenIsExpired Then Me.Authenticate()
+
+            ' A request to CDN-enable the container.
+            Dim CdnEnableRequest As HttpWebRequest
+
+            ' Change the target URL based on what server farm we're counting on.
+            If ServerLocation = CloudFiles.ServerLocation.Chicago Then
+                CdnEnableRequest = HttpWebRequest.Create(Me.ChicagoManagementUrl & "/" & ContainerName)
+            Else
+                CdnEnableRequest = HttpWebRequest.Create(Me.DallasManagementUrl & "/" & ContainerName)
+            End If
+
+            With CdnEnableRequest
+                .Method = "PUT"
+                .Headers.Add("X-Auth-Token", Me.XAuthToken)
+                .Headers.Add("X-CDN-Enabled", "True")
+                .Headers.Add("X-TTL", CStr(TimeToLive))
+            End With
+
+            Dim CdnEnableContainerResponse As HttpWebResponse = CdnEnableRequest.GetResponse
+
+            If CdnEnableContainerResponse.StatusCode = HttpStatusCode.Created Then
+                Return CdnEnableContainerResult.CdnEnabledContainerSuccessfully
+            ElseIf CdnEnableContainerResponse.StatusCode = HttpStatusCode.Accepted Then
+                Return CdnEnableContainerResult.ContainerAlreadyCdnEnabled
+            Else
+                Return CdnEnableContainerResult.UnknownResultProbableFailure
+            End If
+
+        End Function
+
+        Public Function CdnDisableContainer(ByVal ContainerName As String, ByVal ServerLocation As ServerLocation, Optional ByVal TimeToLive As Long = 259200) As CdnEnableContainerResult
+
+            ' Make sure we've got a valid token. Reauthenticate if need be.
+            If Me.XAuthTokenIsExpired Then Me.Authenticate()
+
+            ' A request to CDN-disable the container.
+            Dim CdnEnableRequest As HttpWebRequest
+
+            ' Change the target URL based on what server farm we're counting on.
+            If ServerLocation = CloudFiles.ServerLocation.Chicago Then
+                CdnEnableRequest = HttpWebRequest.Create(Me.ChicagoManagementUrl & "/" & ContainerName)
+            Else
+                CdnEnableRequest = HttpWebRequest.Create(Me.DallasManagementUrl & "/" & ContainerName)
+            End If
+
+            With CdnEnableRequest
+                .Method = "PUT"
+                .Headers.Add("X-Auth-Token", Me.XAuthToken)
+                .Headers.Add("X-CDN-Enabled", "False")
+                .Headers.Add("X-TTL", CStr(TimeToLive))
+            End With
+
+            Dim CdnEnableContainerResponse As HttpWebResponse = CdnEnableRequest.GetResponse
+
+            If CdnEnableContainerResponse.StatusCode = HttpStatusCode.Created Then
+                Return CdnEnableContainerResult.CdnEnabledContainerSuccessfully
+            ElseIf CdnEnableContainerResponse.StatusCode = HttpStatusCode.Accepted Then
+                Return CdnEnableContainerResult.ContainerAlreadyCdnEnabled
+            Else
+                Return CdnEnableContainerResult.UnknownResultProbableFailure
             End If
 
         End Function
