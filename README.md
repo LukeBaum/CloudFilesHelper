@@ -1,4 +1,4 @@
-CloudFilesHelper "1.0"
+CloudFilesHelper "1.1"
 
 ABOUT
 
