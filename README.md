@@ -42,7 +42,7 @@ Imports Helpers.CloudFiles
 
 ' We need an instance of a CloudFilesHelper object to do the lifting. We pass to it our Cloud Files API Key and our Cloud Files Account Name.
 
-Dim Helper As New CloudFilesHelper("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "accountname")
+Dim Helper As New CloudFilesHelper("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "accountname")
 
 ' The constructor gets us an X-Auth-Token to use and will keep using that token. If it detects that it is expired, it will get a new token in any call automatically; we do not need to manually authenticate again.
 
