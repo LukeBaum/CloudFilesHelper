@@ -1,3 +1,5 @@
+NOTE: This project is ancient and will be archived.
+
 CloudFilesHelper "1.1"
 
 ABOUT
